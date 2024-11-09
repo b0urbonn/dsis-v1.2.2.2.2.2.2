@@ -1,0 +1,585 @@
+/* for general with */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #1f6a3e;
+  position: relative;
+}
+
+.header-btns {
+  display: flex;
+  align-items: center;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-icon {
+  margin-right: 1rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.notification-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1rem;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notifications-dropdown h3 {
+  margin-top: 0;
+}
+
+.notifications-dropdown ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.notifications-dropdown li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.notifications-dropdown li:last-child {
+  border-bottom: none;
+}
+
+.notifications-dropdown li.read {
+  opacity: 0.6;
+}
+
+.notifications-dropdown a {
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+}
+
+.notifications-dropdown .notification-time {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.notifications-dropdown button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+/* ... (keep the rest of your CSS styles) */
+.notification-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.notification-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+}
+
+.notification-content h3 {
+  margin-top: 0;
+}
+
+.notification-content button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  padding: 2rem;
+}
+
+.section-content {
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  gap: 2rem;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.cases-table {
+  flex: 1; /* Left Column */
+  background-color: #f9f9f9; /* Optional: to visually separate the sections */
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px; /* Set max width */
+}
+
+.form-container {
+  flex: 1; /* Right Column */
+  background-color: #f9f9f9; /* Optional: to visually separate the sections */
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px; /* Set max width */
+}
+
+.table-section, .report-section {
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.divider {
+  width: 1px;
+  background-color: #ccc;
+  margin: 0 1rem;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.submit-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: flex-start;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #45a049;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.footer {
+  background-color: #f0f0f0;
+  padding: 0.1rem;
+  text-align: center;
+}
+
+
+/* for rhu */
+.nav-buttons button {
+  margin-right: 10px;
+  padding: 0.5rem 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-buttons button:hover {
+  background-color: #45a049;
+}
+
+.welcome-message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.welcome-message h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.welcome-message p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.welcome-message {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 2rem; /* Add space below the welcome message */
+}
+
+.welcome-message h2 {
+  font-size: 2rem;
+  color: #1f6a3e; /* Match header color */
+  margin-bottom: 1rem;
+}
+
+.dashboard-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem; /* Add spacing below stats */
+}
+
+.stat-item {
+  background-color: #ffffff; /* White background for stat items */
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  margin: 0 0.5rem; /* Spacing between stat items */
+}
+
+.stat-item h3 {
+  margin: 0 0 0.5rem; /* Spacing below stat titles */
+}
+
+.stat-item p {
+  font-size: 1.5rem;
+  color: #4CAF50; /* Use a green color for stats */
+}
+
+.recent-reports {
+  list-style-type: none;
+  padding: 0;
+}
+
+.recent-reports li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.recent-reports li:last-child {
+  border-bottom: none;
+}
+
+/* Updated styles for the case section */
+.section-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.cases-table,
+.form-container {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 650px;
+  min-width: 300px;
+}
+
+.cases-table {
+  overflow-x: auto;
+}
+
+.cases-table table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cases-table th,
+.cases-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.cases-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.add-case-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.add-case-btn:hover {
+  background-color: #45a049;
+}
+
+/* Responsive design improvements */
+@media (max-width: 1200px) {
+  .section-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cases-table,
+  .form-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-content {
+    padding: 1rem;
+  }
+
+  .cases-table,
+  .form-container {
+    padding: 1rem;
+  }
+
+  .cases-table th,
+  .cases-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* Ensure consistent styling for table and form headers */
+.cases-table h2,
+.form-container h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #1f6a3e;
+  font-size: 1.5rem;
+}
+
+/* Style for the "Show Form" button */
+.show-form-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.show-form-btn:hover {
+  background-color: #45a049;
+}
+
+
+.report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.symptoms-section {
+  margin: 20px 0;
+}
+
+.symptoms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.symptom-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.add-symptom-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remove-symptom-btn {
+  background: none;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.symptom-row select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Add these styles to your user.css file */
+
+.disease-predictions {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.disease-predictions h3 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.predictions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prediction-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.disease-name {
+  flex: 0 0 200px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.probability-bar {
+  flex: 1;
+  height: 24px;
+  background-color: #e9ecef;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.probability-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 12px;
+}
+
+.probability-text {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 0.9em;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
