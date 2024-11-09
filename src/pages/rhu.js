@@ -1,23 +1,67 @@
 import React, { useState } from 'react';
-import { FaBell, FaEdit } from 'react-icons/fa';
+import { FaBell, FaEdit, FaTimes, FaPlus } from 'react-icons/fa';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, Legend, ResponsiveContainer, LineChart, Line
 } from 'recharts';
-
-import './user.css';
 
 const municipalities = ['Boac', 'Gasan', 'Mogpog', 'Santa Cruz', 'Buenavista', 'Torrijos'];
 const facilities = ['RHU Boac', 'RHU Gasan', 'RHU Mogpog', 'RHU Santa Cruz', 'RHU Buenavista', 'RHU Torijos'];
-const statusOptions = ['Pending', 'Active', 'Recovered', 'Deceased'];
+const statusOptions = ['', 'Active', 'Recovered', 'Deceased'];
+
+const commonSymptoms = [
+  'Fever',
+  'Cough',
+  'Headache',
+  'Fatigue',
+  'Body Pain',
+  'Sore Throat',
+  'Difficulty Breathing',
+  'Diarrhea',
+  'Loss of Taste/Smell',
+  'Runny Nose'
+];
+
+// Disease prediction logic based on symptoms
+const predictDisease = (symptoms) => {
+  const predictions = {
+    'Common Cold': {
+      symptoms: ['Runny Nose', 'Cough', 'Sore Throat', 'Fatigue'],
+      count: 0,
+      accuracy: 0
+    },
+    'Flu': {
+      symptoms: ['Fever', 'Body Pain', 'Fatigue', 'Headache', 'Cough'],
+      count: 0,
+      accuracy: 0
+    },
+    'COVID-19': {
+      symptoms: ['Fever', 'Cough', 'Loss of Taste/Smell', 'Difficulty Breathing', 'Fatigue'],
+      count: 0,
+      accuracy: 0
+    }
+  };
+
+  // Calculate matches for each disease
+  Object.keys(predictions).forEach(disease => {
+    const matchingSymptoms = predictions[disease].symptoms.filter(s => 
+      symptoms.includes(s)
+    );
+    predictions[disease].count = matchingSymptoms.length;
+    predictions[disease].accuracy = (matchingSymptoms.length / predictions[disease].symptoms.length) * 100;
+  });
+
+  // Find the disease with highest accuracy
+  let predictedDisease = Object.entries(predictions)
+    .reduce((prev, [disease, data]) => {
+      return data.accuracy > prev.accuracy ? { disease, accuracy: data.accuracy } : prev;
+    }, { disease: 'Unknown', accuracy: 0 });
+
+  return {
+    disease: predictedDisease.disease,
+    accuracy: Math.round(predictedDisease.accuracy)
+  };
+};
 
 const UserScreen = ({ userType, onLogout }) => {
   const [showNotifications, setShowNotifications] = useState(false);
@@ -32,6 +76,9 @@ const UserScreen = ({ userType, onLogout }) => {
   const [selectedFacility, setSelectedFacility] = useState('');
   const [dateFilter, setDateFilter] = useState('today');
   const [editingCase, setEditingCase] = useState(null);
+  const [newSymptom, setNewSymptom] = useState('');
+  const [customSymptoms, setCustomSymptoms] = useState([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   
   const [dashboardData, setDashboardData] = useState({
     totalCases: 45,
@@ -48,8 +95,8 @@ const UserScreen = ({ userType, onLogout }) => {
         patientMun: 'Boac',
         patientProv: 'Marinduque',
         patientBdate: '1990-01-01',
-        disease: 'COVID-19',
-        status: 'Pending',
+        symptoms: ['Fever', 'Cough'],
+        status: 'Active',
         date: '2024-10-15'
       },
       { 
@@ -62,22 +109,41 @@ const UserScreen = ({ userType, onLogout }) => {
         patientMun: 'Gasan',
         patientProv: 'Marinduque',
         patientBdate: '1985-05-15',
-        disease: 'Influenza',
-        status: 'Pending',
+        symptoms: ['Headache', 'Fatigue'],
+        status: 'Recovered',
         date: '2024-10-12'
       },
     ],
   });
 
   const handleMarkAsRead = (id) => {
-    setNotifications(notifications.map((n) =>
-      n.id === id ? { ...n, read: true } : n
+    setNotifications(notifications.map(notification =>
+      notification.id === id ? { ...notification, read: true } : notification
     ));
   };
 
+  
+  const handleAddCustomSymptom = () => {
+    if (newSymptom && !customSymptoms.includes(newSymptom)) {
+      setCustomSymptoms([...customSymptoms, newSymptom]);
+      setNewSymptom('');
+    }
+  };
+
+  const handleSymptomSelect = (symptom) => {
+    if (!selectedSymptoms.includes(symptom)) {
+      setSelectedSymptoms([...selectedSymptoms, symptom]);
+    }
+  };
+
+  const handleRemoveSymptom = (symptom) => {
+    setSelectedSymptoms(selectedSymptoms.filter(s => s !== symptom));
+  };
   const handleAddCase = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const prediction = predictDisease(selectedSymptoms);
+    
     const newCase = {
       id: dashboardData.recentReports.length + 1,
       patientLName: formData.get('patientLName'),
@@ -88,7 +154,8 @@ const UserScreen = ({ userType, onLogout }) => {
       patientMun: formData.get('patientMun'),
       patientProv: formData.get('patientProv'),
       patientBdate: formData.get('patientBdate'),
-      disease: formData.get('disease'),
+      symptoms: selectedSymptoms,
+      disease: `${prediction.disease} (${prediction.accuracy}%)`,
       status: 'Active',
       date: new Date().toISOString().split('T')[0]
     };
@@ -98,16 +165,20 @@ const UserScreen = ({ userType, onLogout }) => {
       recentReports: [...prevData.recentReports, newCase]
     }));
 
+    setSelectedSymptoms([]);
     e.target.reset();
   };
 
   const handleEditCase = (caseItem) => {
     setEditingCase(caseItem);
+    setSelectedSymptoms(caseItem.symptoms);
   };
 
   const handleUpdateCase = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const prediction = predictDisease(selectedSymptoms);
+    
     const updatedCase = {
       ...editingCase,
       patientLName: formData.get('patientLName'),
@@ -118,22 +189,9 @@ const UserScreen = ({ userType, onLogout }) => {
       patientMun: formData.get('patientMun'),
       patientProv: formData.get('patientProv'),
       patientBdate: formData.get('patientBdate'),
-      disease: formData.get('disease'),
-      status: formData.get('status'),
-      clinicalData: {
-        fever: formData.get('fever'),
-        feverOnsetDate: formData.get('feverOnsetDate'),
-        rash: formData.get('rash'),
-        rashOnsetDate: formData.get('rashOnsetDate'),
-        cough: formData.get('cough'),
-        koplikSign: formData.get('koplikSign'),
-        runnyNose: formData.get('runnyNose'),
-        redEyes: formData.get('redEyes'),
-        arthralgia: formData.get('arthralgia'),
-        swollenLympheticModule: formData.get('swollenLympheticModule'),
-        lympheticLocation: formData.get('lympheticLocation'),
-        otherSymptoms: formData.get('otherSymptoms')
-      }
+      symptoms: selectedSymptoms,
+      disease: `${prediction.disease} (${prediction.accuracy}%)`,
+      status: formData.get('status')
     };
 
     setDashboardData(prevData => ({
@@ -144,7 +202,21 @@ const UserScreen = ({ userType, onLogout }) => {
     }));
 
     setEditingCase(null);
+    setSelectedSymptoms([]);
   };
+
+    // Add state for predicted disease
+    const [predictedDisease, setPredictedDisease] = useState({ disease: '', accuracy: 0 });
+
+    // Update prediction whenever symptoms change
+    React.useEffect(() => {
+      if (selectedSymptoms.length > 0) {
+        const prediction = predictDisease(selectedSymptoms);
+        setPredictedDisease(prediction);
+      } else {
+        setPredictedDisease({ disease: '', accuracy: 0 });
+      }
+    }, [selectedSymptoms]);
 
   const chartData = [
     { name: 'Total Cases', count: dashboardData.totalCases },
@@ -245,41 +317,40 @@ const UserScreen = ({ userType, onLogout }) => {
           </div>
         )}
 
-{activeSection === 'cases' && (
-          <div className="section-content" style={{ display: 'flex', gap: '2rem' }}>
-            {/* Left Column: Table */}
-            <div className="cases-table" style={{ flex: 1, backgroundColor: 'white', padding: '1rem', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-              <h2>Reported Cases</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Disease</th>
-                    <th>Status</th>
-                    <th>Action</th>
+      {activeSection === 'cases' && (
+        <div className="section-content" style={{ display: 'flex', gap: '2rem' }}>
+          <div className="cases-table" style={{ flex: 1, backgroundColor: 'white', padding: '1rem', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+            <h2>Reported Cases</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Disease</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboardData.recentReports.map((report) => (
+                  <tr key={report.id}>
+                    <td>{`${report.patientLName}, ${report.patientFName} ${report.patientMI}`}</td>
+                    <td>{`${report.patientBgy}, ${report.patientMun}, ${report.patientProv}`}</td>
+                    <td>{report.disease}</td>
+                    <td>{report.status}</td>
+                    <td>
+                      <button 
+                        className="edit-btn"
+                        onClick={() => handleEditCase(report)}
+                      >
+                        <FaEdit /> Edit
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {dashboardData.recentReports.map((report) => (
-                    <tr key={report.id}>
-                      <td>{`${report.patientLName}, ${report.patientFName} ${report.patientMI}`}</td>
-                      <td>{`${report.patientBgy}, ${report.patientMun}, ${report.patientProv}`}</td>
-                      <td>{report.disease}</td>
-                      <td>{report.status}</td>
-                      <td>
-                        <button 
-                          className="edit-btn"
-                          onClick={() => handleEditCase(report)}
-                        >
-                          <FaEdit /> Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
             {/* Right Column: Form */}
             <div className="form-container" style={{ flex: 1, backgroundColor: 'white', padding: '1rem', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -365,43 +436,106 @@ const UserScreen = ({ userType, onLogout }) => {
                 </div>
 
                 <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="patientBdate">Birthdate:</label>
-                    <input
-                      type="date"
-                      id="patientBdate"
-                      name="patientBdate"
-                      defaultValue={editingCase?.patientBdate}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="disease">Disease:</label>
-                    <input
-                      type="text"
-                      id="disease"
-                      name="disease"
-                      defaultValue={editingCase?.disease}
-                      required
-                    />
-                  </div>
-                  {editingCase && (
-                    <div className="form-group">
-                      <label htmlFor="status">Status:</label>
-                      <select
-                        id="status"
-                        name="status"
-                        defaultValue={editingCase.status}
-                        required
-                      >
-                        {statusOptions.map(status => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
+    <div className="form-group">
+      <label htmlFor="patientBdate">Birthdate:</label>
+      <input
+        type="date"
+        id="patientBdate"
+        name="patientBdate"
+        defaultValue={editingCase?.patientBdate}
+        required
+      />
+    </div>
+    <div className="form-group">
+      <label>Predicted Disease:</label>
+      <input
+        type="text"
+        value={selectedSymptoms.length > 0 ? `${predictedDisease.disease} (${predictedDisease.accuracy}%)` : 'Add symptoms to predict disease'}
+        readOnly
+        style={{ backgroundColor: '#f3f4f6' }}
+      />
+    </div>
+    {editingCase && (
+      <div className="form-group">
+        <label htmlFor="status">Status:</label>
+        <select
+          id="status"
+          name="status"
+          defaultValue={editingCase.status}
+          required
+        >
+          {statusOptions.map(status => (
+            <option key={status} value={status}>{status}</option>
+          ))}
+        </select>
+      </div>
+    )}
+  </div>
+                 {/* Symptoms Section */}
+              <div className="form-row">
+                <div className="form-group" style={{ width: '100%' }}>
+                  <label>Symptoms:</label>
+                  <div className="symptoms-container">
+                    {/* Selected Symptoms */}
+                    <div className="selected-symptoms" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                      {selectedSymptoms.map((symptom) => (
+                        <span key={symptom} className="symptom-tag" style={{ 
+                          backgroundColor: '#e2e8f0', 
+                          padding: '0.25rem 0.5rem', 
+                          borderRadius: '0.25rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.25rem'
+                        }}>
+                          {symptom}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSymptom(symptom)}
+                            style={{ border: 'none', background: 'none', padding: '0', cursor: 'pointer' }}
+                          >
+                            <FaTimes size={12} />
+                          </button>
+                        </span>
+                      ))}
                     </div>
-                  )}
-                  
+
+                    {/* Common Symptoms Dropdown */}
+                    <select
+                      onChange={(e) => handleSymptomSelect(e.target.value)}
+                      value=""
+                      className="mb-2"
+                    >
+                      <option value="">Select Common Symptoms</option>
+                      {commonSymptoms.map((symptom) => (
+                        <option key={symptom} value={symptom}>{symptom}</option>
+                      ))}
+                      {customSymptoms.map((symptom) => (
+                        <option key={symptom} value={symptom}>{symptom}</option>
+                      ))}
+                    </select>
+
+                    {/* Add Custom Symptom */}
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <input
+                        type="text"
+                        value={newSymptom}
+                        onChange={(e) => setNewSymptom(e.target.value)}
+                        placeholder="Enter new symptom"
+                        className="flex-grow"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomSymptom}
+                        className="add-symptom-btn"
+                        style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                      >
+                        <FaPlus size={12} /> Add
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
 
                 <div className="form-buttons">
                   <button type="submit" className="submit-btn">
